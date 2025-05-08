@@ -1,0 +1,20 @@
+[project]
+name = "airflow-lighthouse-aula-pratica"
+version = "0.1.0"
+description = "Case para aula prática de Airflow"
+authors = [
+    {name = "LucasJFaust",email = "lucasjfm.eng@gmail.com"}
+]
+readme = "README.md"
+requires-python = ">=3.8.1,<3.13"
+dependencies = [
+    "apache-airflow (==2.10.4)"
+]
+
+
+[build-system]
+requires = ["poetry-core>=2.0.0,<3.0.0"]
+build-backend = "poetry.core.masonry.api"
+
+[tool.poetry.dependencies]
+apache-airflow = {allow-prereleases = true}
