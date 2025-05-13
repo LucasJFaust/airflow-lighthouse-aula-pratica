@@ -1,0 +1,32 @@
+version: '3.8'
+
+services:
+  postgres:
+    image: postgres:15
+    container_name: airflow_postgres
+    restart: always
+    environment:
+      POSTGRES_USER: airflow
+      POSTGRES_PASSWORD: airflow
+      POSTGRES_DB: northwind
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    ports:
+      - "5432:5432"
+    networks:
+      - airflow_net
+
+  adminer:
+    image: adminer
+    container_name: airflow_adminer
+    restart: always
+    ports:
+      - "8081:8080"
+    networks:
+      - airflow_net
+
+volumes:
+  postgres_data:
+
+networks:
+  airflow_net:
