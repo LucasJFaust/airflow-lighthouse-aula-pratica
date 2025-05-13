@@ -1,11 +1,11 @@
 #!/bin/bash
 
 # Script para iniciar o ambiente Airflow via Docker Compose
-# Crei ele para reproduzir o projeto localmente de forma padronizada
+# Criei ele para reproduzir o projeto localmente de forma padronizada
 
 # 1. Inicializa o banco de dados do Airflow (apenas na primeira vez ou quando resetar)
 echo "Inicializando o banco de dados do Airflow..."
-docker compose up airflow-init
+cd infra && docker compose up airflow-init
 
 # 2. Sobe todos os serviços do ambiente Airflow em segundo plano (modo -d = detached para não bloquear o terminal)
 echo "Subindo todos os serviços do Airflow..."
