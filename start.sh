@@ -7,7 +7,7 @@
 echo "Inicializando o banco de dados do Airflow..."
 docker compose up airflow-init
 
-# 2. Sobe todos os serviços do ambiente Airflow em segundo plano (modo -d = detached)
+# 2. Sobe todos os serviços do ambiente Airflow em segundo plano (modo -d = detached para não bloquear o terminal)
 echo "Subindo todos os serviços do Airflow..."
 docker compose up -d
 
