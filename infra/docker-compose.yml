@@ -1,30 +1,46 @@
-# Versão da especificação do Docker Compose
+# Versão da especificação do Docker Compose (pode ser omitida nas versões modernas)
 version: '3.8'
 
 services:
+  # Serviço responsável por inicializar o banco de dados do Airflow automaticamente
+  airflow-init:
+    image: apache/airflow:2.10.4-python3.11  # Usa a mesma imagem do Airflow
+    container_name: airflow_init             # Nome do contêiner de inicialização
+    depends_on:
+      - airflow-db                           # Espera o banco estar pronto antes de executar
+    environment:
+      - AIRFLOW__CORE__EXECUTOR=SequentialExecutor         # Mesmo executor das demais instâncias
+      - AIRFLOW__CORE__DAGS_FOLDER=/opt/airflow/dags       # Caminho das DAGs dentro do contêiner
+    volumes:
+      - ../dags:/opt/airflow/dags            # Mapeia as DAGs do host para o contêiner
+      - ../output:/opt/airflow/output        # Mapeia a pasta de saída (CSV) do host para o contêiner
+    entrypoint: airflow db init              # Comando que será executado ao rodar este serviço
+    networks:
+      - airflow_net
+
   # Serviço: Webserver do Airflow (interface web)
   airflow-webserver:
-    image: apache/airflow:2.10.4-python3.11  # Imagem oficial do Airflow com Python 3.11
-    container_name: airflow_webserver        # Nome do contêiner
-    restart: always                          # Reinicia automaticamente se o contêiner falhar
-    depends_on:                              # Aguarda o scheduler e o banco estarem prontos
+    image: apache/airflow:2.10.4-python3.11
+    container_name: airflow_webserver
+    restart: always
+    depends_on:
       - airflow-scheduler
       - airflow-db
     environment:
-      - AIRFLOW__CORE__EXECUTOR=SequentialExecutor         # Tipo de executor (usando sequencial para simplicidade)
-      - AIRFLOW__CORE__DAGS_FOLDER=/opt/airflow/dags       # Onde estão as DAGs dentro do contêiner
-      - AIRFLOW__CORE__LOAD_EXAMPLES=False                 # Não carregar DAGs de exemplo
-      - AIRFLOW__WEBSERVER__WEB_SERVER_PORT=8080           # Porta onde a UI web vai rodar
+      - AIRFLOW__CORE__EXECUTOR=SequentialExecutor
+      - AIRFLOW__CORE__DAGS_FOLDER=/opt/airflow/dags
+      - AIRFLOW__CORE__LOAD_EXAMPLES=False
+      - AIRFLOW__WEBSERVER__WEB_SERVER_PORT=8080
     ports:
-      - "8080:8080"                      # Mapeia a porta 8080 do contêiner para a porta 8080 do host
+      - "8080:8080"
     volumes:
-      - ../dags:/opt/airflow/dags        # Mapeia a pasta local de DAGs para o contêiner
-      - ../output:/opt/airflow/output    # Mapeia a pasta local onde o CSV será salvo
-    command: webserver                    # Comando que inicia o webserver do Airflow
+      - ../dags:/opt/airflow/dags
+      - ../output:/opt/airflow/output
+    command: webserver
     networks:
-      - airflow_net                      # Rede para comunicação entre os contêineres
+      - airflow_net
 
-  # Serviço: Scheduler do Airflow (gerencia execução das DAGs)
+  # Serviço: Scheduler do Airflow (responsável por agendar e iniciar tasks)
   airflow-scheduler:
     image: apache/airflow:2.10.4-python3.11
     container_name: airflow_scheduler
@@ -37,21 +53,21 @@ services:
     volumes:
       - ../dags:/opt/airflow/dags
       - ../output:/opt/airflow/output
-    command: scheduler                    # Comando que inicia o scheduler do Airflow
+    command: scheduler
     networks:
       - airflow_net
 
   # Serviço: Banco de dados PostgreSQL usado pelo Airflow
   airflow-db:
-    image: postgres:15                    # Imagem oficial do PostgreSQL
+    image: postgres:15
     container_name: airflow_postgres
     restart: always
     environment:
-      POSTGRES_USER: airflow              # Usuário padrão do banco
-      POSTGRES_PASSWORD: airflow          # Senha do usuário
-      POSTGRES_DB: airflow                # Nome do banco usado pelo Airflow
+      POSTGRES_USER: airflow
+      POSTGRES_PASSWORD: airflow
+      POSTGRES_DB: airflow
     volumes:
-      - pgdata:/var/lib/postgresql/data  # Volume para persistir os dados do banco
+      - pgdata:/var/lib/postgresql/data
     networks:
       - airflow_net
 
@@ -59,6 +75,6 @@ services:
 volumes:
   pgdata:
 
-# Rede interna para que os contêineres consigam se comunicar entre si
+# Rede interna para comunicação entre os contêineres
 networks:
   airflow_net:
