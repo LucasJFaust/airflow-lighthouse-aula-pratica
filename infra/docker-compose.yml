@@ -11,6 +11,7 @@ services:
     environment:
       - AIRFLOW__CORE__EXECUTOR=SequentialExecutor         # Mesmo executor das demais instâncias
       - AIRFLOW__CORE__DAGS_FOLDER=/opt/airflow/dags       # Caminho das DAGs dentro do contêiner
+      - AIRFLOW__CORE__SQL_ALCHEMY_CONN=postgresql+psycopg2://airflow:airflow@airflow-db/airflow  # Corrige o problema do SQLite
     volumes:
       - ../dags:/opt/airflow/dags            # Mapeia as DAGs do host para o contêiner
       - ../output:/opt/airflow/output        # Mapeia a pasta de saída (CSV) do host para o contêiner
