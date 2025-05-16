@@ -7,7 +7,7 @@ import pendulum
 
 # 🛠️ Importa a função utilitária para obter o nome do aluno via variável de ambiente
 # Como a pasta `utils` foi movida para dentro de `dags`, usamos o prefixo `dags.`
-from dags.utils.env import get_nome_aluno
+from utils.env import get_nome_aluno
 
 
 def imprimir_mensagem():
