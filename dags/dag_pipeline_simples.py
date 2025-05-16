@@ -7,6 +7,9 @@ from airflow.decorators import dag, task
 # Pendulum é usado em vez de datetime porque é timezone-aware (recomendado pelo Airflow)
 import pendulum
 
+# Tive que importar timedelta do módulo datetime para usar no retry
+from datetime import timedelta
+
 # Requests é usado para fazer requisições HTTP à API do IBGE
 import requests
 
@@ -36,7 +39,7 @@ def pipeline_ibge():
     - Salva os dados transformados como CSV local
     """
 
-    @task(retries=3, retry_delay_seconds=10)
+    @task(retries=3, retry_delay_seconds=timedelta(seconds=10))
     def extrair_dados():
         """
         Extrai a lista de estados brasileiros da API do IBGE.
