@@ -5,7 +5,7 @@ from airflow.operators.python import PythonOperator
 import pendulum
 
 # Importa a função que monta a mensagem a partir de uma variável do Airflow
-from utils.messages import mensagem_airflow_ui
+from dags.utils.messages import mensagem_airflow_ui
 
 
 def imprimir_mensagem_ui():
