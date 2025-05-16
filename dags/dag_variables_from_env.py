@@ -5,8 +5,9 @@ from airflow import DAG
 from airflow.operators.python import PythonOperator
 import pendulum
 
-# Importa a função que lê a variável do .env
-from utils.env import get_nome_aluno
+# 🛠️ Importa a função utilitária para obter o nome do aluno via variável de ambiente
+# Como a pasta `utils` foi movida para dentro de `dags`, usamos o prefixo `dags.`
+from dags.utils.env import get_nome_aluno
 
 
 def imprimir_mensagem():
