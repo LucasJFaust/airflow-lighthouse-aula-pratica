@@ -39,7 +39,7 @@ def pipeline_ibge():
     - Salva os dados transformados como CSV local
     """
 
-    @task(retries=3, retry_delay_seconds=timedelta(seconds=10))
+    @task(retries=3, retry_delay=timedelta(seconds=10))
     def extrair_dados():
         """
         Extrai a lista de estados brasileiros da API do IBGE.
