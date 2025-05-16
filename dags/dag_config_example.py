@@ -3,8 +3,8 @@
 from airflow import DAG
 from airflow.operators.python import PythonOperator
 
-# Importa os parâmetros centralizados do projeto
-from utils.config import DEFAULT_START_DATE, DEFAULT_ARGS, NOME_ALUNO, TAG_AULA
+# Importa os parâmetros centralizados do projeto (aqui mudamos o caminho para usar o docker compose)
+from dags.utils.config import DEFAULT_START_DATE, DEFAULT_ARGS, NOME_ALUNO, TAG_AULA
 
 
 def saudacao_configurada():
