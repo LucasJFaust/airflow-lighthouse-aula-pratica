@@ -24,6 +24,7 @@ services:
   airflow-webserver:
     image: apache/airflow:2.10.4-python3.11
     container_name: airflow_webserver
+    user: root                                   # Executa como root para evitar problemas de permissão
     restart: always
     depends_on:
       - airflow-scheduler
@@ -50,6 +51,7 @@ services:
   airflow-scheduler:
     image: apache/airflow:2.10.4-python3.11
     container_name: airflow_scheduler
+    user: root                                   # Executa como root para evitar problemas de permissão
     restart: always
     depends_on:
       - airflow-db
