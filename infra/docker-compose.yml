@@ -41,6 +41,7 @@ services:
       - ../dags:/opt/airflow/dags
       - ../output:/opt/airflow/output
       - ../logs:/opt/airflow/logs                        # Adiciona esse volume para persistência de logs
+      - /var/run/docker.sock:/var/run/docker.sock        # Adiciona esse volume expor o socket do Docker
     command: webserver
     networks:
       - airflow_net
@@ -61,6 +62,7 @@ services:
       - ../dags:/opt/airflow/dags
       - ../output:/opt/airflow/output
       - ../logs:/opt/airflow/logs                       # Adiciona esse volume para persistência de logs
+      - /var/run/docker.sock:/var/run/docker.sock       # Adiciona esse volume expor o socket do Docker
     command: scheduler
     networks:
       - airflow_net
