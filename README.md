@@ -504,79 +504,6 @@ Outros pontos relevantes:
 
 ---
 
-### 🔧 Scripts auxiliares: `start.sh`, `stop.sh`, `reset.sh`, `logs.sh`
-
-Esses scripts foram criados para facilitar a vida do desenvolvedor/aluno, evitando que precisem lembrar comandos longos.
-
-#### `start.sh`
-
-```bash
-docker compose -f infra/docker-compose.yml up airflow-init && \
-docker compose -f infra/docker-compose.yml up -d
-```
-
-* Inicializa o banco de metadados do Airflow
-* Sobe os containers em segundo plano
-
-#### `stop.sh`
-
-```bash
-docker compose -f infra/docker-compose.yml down
-```
-
-* Para e remove os containers do Airflow
-
-#### `reset.sh`
-
-```bash
-rm -rf logs/* output/* && docker compose -f infra/docker-compose.yml down -v
-```
-
-* Limpa os logs e a pasta de output
-* Destroi os volumes persistentes para recomeçar o projeto do zero
-
-#### `logs.sh`
-
-```bash
-docker compose -f infra/docker-compose.yml logs -f
-```
-
-* Segue os logs em tempo real da execução dos containers
-
----
-
-### 🔧 Alternativa com `Makefile`
-
-Criamos também um `Makefile` para centralizar esses comandos de forma organizada:
-
-```makefile
-start:
-	docker compose -f infra/docker-compose.yml up airflow-init && \
-	docker compose -f infra/docker-compose.yml up -d
-
-stop:
-	docker compose -f infra/docker-compose.yml down
-
-reset:
-	rm -rf logs/* output/* && docker compose -f infra/docker-compose.yml down -v
-
-logs:
-	docker compose -f infra/docker-compose.yml logs -f
-```
-
-Com isso, podemos rodar:
-
-```bash
-make start
-make stop
-make reset
-make logs
-```
-
-Além de didático, o uso do `Makefile` ensina boas práticas de automação para os alunos.
-
----
-
 ### 🔹 Estrutura de diretórios
 
 ```bash
@@ -592,7 +519,57 @@ Além de didático, o uso do `Makefile` ensina boas práticas de automação par
 
 ---
 
-### 🚀 Executando o projeto do zero
+## Scripts de Gerenciamento do Ambiente
+
+Para simplificar a interação com o ambiente Docker do Apache Airflow e otimizar as tarefas do dia a dia, este projeto utiliza uma série de scripts shell (`.sh`). Eles abstraem comandos complexos do Docker e do Airflow CLI, tornando o processo de inicialização, parada e monitoramento muito mais intuitivo.
+
+**Importante:** Antes de executar qualquer script `.sh` pela primeira vez, certifique-se de que ele tenha permissões de execução. Você pode conceder essas permissões usando o comando `chmod +x nome_do_script.sh` no terminal.
+
+A seguir, a descrição e o modo de uso de cada script:
+
+### 1. `start.sh` - Iniciando o Ambiente Airflow
+
+*   **Função:** Este script é o ponto de entrada para levantar todo o seu ambiente Apache Airflow, incluindo os serviços de Webserver, Scheduler, Worker, banco de dados (Postgres) e Redis, todos dentro de contêineres Docker. Ele também garante que o banco de metadados do Airflow seja inicializado e um usuário administrador seja criado, se ainda não existirem.
+*   **Quando usar:** Sempre que você precisar iniciar o ambiente Airflow do zero ou reiniciá-lo após uma parada.
+*   **Como usar:**
+    ```bash
+    ./start.sh
+    ```
+*   **Detalhes:** Ele executa os comandos `docker compose up -d` (para iniciar os serviços em segundo plano) e `docker compose exec airflow-webserver airflow db upgrade`, `airflow users create`, entre outros, para configurar o Airflow.
+
+### 2. `stop.sh` - Parando o Ambiente Airflow
+
+*   **Função:** Este script é responsável por parar todos os serviços do Airflow que estão rodando em contêineres Docker. Ele desliga os contêineres de forma controlada.
+*   **Quando usar:** Quando você terminar de trabalhar no projeto e quiser liberar os recursos do seu computador, ou antes de realizar alterações profundas no ambiente.
+*   **Como usar:**
+    ```bash
+    ./stop.sh
+    ```
+*   **Detalhes:** Ele executa o comando `docker compose down`, que para e remove os contêineres, mas mantém os volumes de dados para persistência.
+
+### 3. `reset.sh` - Resetando o Ambiente Airflow (Com Cuidado!)
+
+*   **Função:** Este é um script de "limpeza total". Ele não apenas para os serviços do Airflow, mas também remove *todos* os volumes de dados associados ao projeto (incluindo o banco de dados do Airflow). Isso significa que você perderá o histórico de execução de DAGs, logs antigos e configurações de usuários.
+*   **Quando usar:** **Use com extrema cautela!** É ideal para quando você quer começar completamente do zero, como se tivesse acabado de clonar o repositório, ou para resolver problemas persistentes com o banco de dados do Airflow. Na maioria dos casos, `stop.sh` e `start.sh` são suficientes.
+*   **Como usar:**
+    ```bash
+    ./reset.sh
+    ```
+*   **Detalhes:** Ele executa `docker compose down -v --remove-orphans`, garantindo uma limpeza profunda.
+
+### 4. `logs.sh` - Visualizando os Logs do Ambiente
+
+*   **Função:** Este script permite visualizar os logs de todos os serviços do Airflow rodando em contêineres Docker em tempo real. É essencial para depuração e monitoramento do que está acontecendo no seu ambiente.
+*   **Quando usar:** Sempre que precisar diagnosticar um problema, verificar se os serviços estão iniciando corretamente ou acompanhar a execução de tasks.
+*   **Como usar:**
+    ```bash
+    ./logs.sh
+    ```
+*   **Detalhes:** Ele executa `docker compose logs -f`, mostrando a saída de log de todos os contêineres e acompanhando novas linhas (modo "follow"). Pressione `Ctrl+C` para sair da visualização de logs.
+
+---
+
+### 🚀 Outra Opção para Execução (Makefile)
 
 1. Ative o ambiente virtual com `poetry shell`
 2. Inicie os containers:
@@ -605,8 +582,8 @@ bash start.sh
 
 3. Acesse o Airflow em `http://localhost:8080` com:
 
-* **Login:** admin
-* **Senha:** admin
+* **Login:** airflow
+* **Senha:** airflow
 
 4. Execute a DAG desejada na interface ou aguarde o agendamento
 
@@ -615,85 +592,7 @@ bash start.sh
 6. Acompanhe os logs com:
 
 ```bash
-make logs
-```
-
-7. Para parar:
-
-```bash
-make stop
-```
-
-8. Para limpar tudo:
-
-```bash
-make reset
+./logs.sh
 ```
 
 ---
-## ⚔️ Continuação com Astro CLI (em projeto separado)
-
-### Por que separar?
-
-Como o objetivo da aula é mostrar boas práticas e a evolução de um projeto Airflow, decidimos criar um segundo projeto separado usando o [Astro CLI](https://docs.astronomer.io/astro/cli/overview), a ferramenta oficial da Astronomer, voltada para rodar Airflow com mais profissionalismo e escalabilidade.
-
-Separar os projetos nos permitiu:
-
-* Evitar conflitos entre estruturas diferentes (Docker Compose vs Astro CLI)
-* Simular um processo de migração realista de um projeto legado para um ambiente moderno
-* Organizar melhor o conteúdo didático da aula
-
----
-
-### 📁 Projeto com Astro CLI
-
-O projeto está disponível neste repositório:
-
-🔗 **[Link para o projeto Astro CLI no GitHub](https://github.com/seu-usuario/airflow-projeto-astro-cli)**
-
-> *(Substitua pelo link real do repositório)*
-
----
-
-### O que ele contém
-
-* A DAG `dag_pipeline_simples.py` migrada do projeto original
-* Estrutura baseada no Astro CLI (`astro dev init`)
-* Customização do Dockerfile para instalar dependências como `requests`
-* Arquivo `requirements.txt` com dependências adicionais
-* Configuração com `airflow_settings.yaml` e `astro.config.yaml`
-* Exemplo de teste de DAG com `astro dev pytest`
-
----
-
-### 🚀 Rodando com Astro CLI
-
-A execução no novo projeto é feita com:
-
-```bash
-astro dev start
-```
-
-Acessando a interface:
-
-* `http://localhost:8080`
-* **Login:** admin
-* **Senha:** admin
-
-Executando os testes da DAG:
-
-```bash
-astro dev pytest
-```
-
----
-
-### 📚 Por que mostrar o Astro CLI?
-
-Durante a aula, mostramos que embora o Airflow funcione com `docker-compose`, é cada vez mais comum em ambientes corporativos e em nuvem utilizar o **Astro CLI**, pois ele:
-
-* Garante compatibilidade com o Astronomer Cloud
-* Padroniza a estrutura de projetos
-* Oferece comandos poderosos de deploy, teste e validação
-* É amplamente utilizado na indústria
-
