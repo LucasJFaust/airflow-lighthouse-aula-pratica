@@ -136,25 +136,44 @@ poetry add apache-airflow requests
 
 ```
 .
-├── dags/                    # Contém todas as DAGs criadas em ordem didática
-│   ├── utils/               # Funções auxiliares usadas em DAGs
-│   ├── 1_dag_variables_operator.py
-│   ├── 2_dag_variables_via_ui.py
-│   ├── 3_dag_variables_from_env.py
-│   ├── 4_dag_config_example.py
-│   ├── 5_dag_pipeline_simples.py
-│   ├── 6_dag_docker_operator_example.py
-│   └── 7_dag_taskflow_xcom.py
-├── output/                 # Saída gerada pelas DAGs
-│   └── estados_ibge.csv
-├── logs/                   # Logs gerados pelo Airflow
-├── infra/
-│   └── docker-compose.yml  # Arquivo principal do ambiente Docker
-├── Makefile                # Comandos úteis para gerenciamento do ambiente
-├── start.sh, stop.sh, reset.sh
-├── .env                    # Variáveis de ambiente
-├── pyproject.toml          # Projeto gerenciado via poetry
-└── README.md               # (Este arquivo)
+├── .git/ # Diretório de versionamento Git
+├── .venv/ # Ambiente virtual Python
+├── dags/ # Contém todas as definições das DAGs do Airflow
+│ ├── pycache/ # Cache de módulos Python
+│ ├── utils/ # Módulos de utilidades e configurações para as DAGs
+│ │ ├── pycache/
+│ │ ├── init.py
+│ │ ├── config.py # Configurações gerais
+│ │ ├── env.py # Variáveis de ambiente
+│ │ └── messages.py # Mensagens ou textos para as DAGs
+│ ├── 1-dag_variables_operator.py # Exemplo de DAG utilizando Airflow Variables via operador
+│ ├── 2-dag_variables_via_ui.py # Exemplo de DAG obtendo variáveis via UI
+│ ├── 3-dag_variables_from_env.py # Exemplo de DAG lendo variáveis de ambiente
+│ ├── 4-dag_config_example.py # Exemplo de DAG com configuração externa
+│ ├── 5-dag_pipeline_simples.py # DAG que demonstra um pipeline de dados simples
+│ ├── 6-dag_docker_operator_example.py # DAG usando DockerOperator
+│ └── 7-dag_taskflow_xcom.py # DAG com TaskFlow API e XComs
+├── infra/ # Definições de infraestrutura (Docker Compose)
+│ └── docker-compose.yml # Arquivo para orquestrar serviços Docker
+├── logs/ # Diretório para logs de execução do Airflow e DAGs
+│ ├── dag_id=dag_docker_operator_example/
+│ ├── dag_id=dag_pipeline_simples/
+│ ├── dag_processor_manager/
+│ └── scheduler/
+├── output/ # Diretório para dados de saída gerados pelas DAGs
+│ └── estados_ibge.csv # Exemplo de arquivo de saída
+├── .env # Arquivo para variáveis de ambiente locais
+├── .gitignore # Regras para ignorar arquivos no Git
+├── .python-version # Define a versão do Python (usado pelo pyenv)
+├── logs.sh # Script para visualizar logs dos contêineres
+├── Makefile # Orquestrador de comandos de build e execução
+├── poetry.lock # Gerenciamento de dependências com Poetry
+├── pyproject.toml # Configuração do projeto e dependências com Poetry
+├── README.md # Este arquivo de documentação
+├── reset.sh # Script para resetar o ambiente Airflow
+├── start.sh # Script para iniciar o ambiente Airflow
+└── stop.sh # Script para parar o ambiente Airflow
+
 ```
 ### ⚠️ Observação
 As pastas logs e output não vão estar no repositório pois estão no gitignore.
